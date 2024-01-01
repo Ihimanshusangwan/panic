@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 
 const accountSid = "AC8e87ebf0e117a6f0ae5fb5ccfe43a755";
-const authToken ="d829f8e798c24eb5d181a8be72525a50";
+const authToken ="75eddcb9d8e442e7c5a896589b9175b5";
 const client = require('twilio')(accountSid, authToken);
 
 app.use(bodyParser.json());
