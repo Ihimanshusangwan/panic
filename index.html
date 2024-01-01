@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fetch Highly Accurate Location</title>
+</head>
+<body>
+  <h1>Fetch Highly Accurate Location</h1>
+  <button id="getLocation">Get Location and Send Message</button>
+  <p id="locationData"></p>
+  <a href="#" id="mapLink" target="_blank" style="display: none;">Open in Google Maps</a>
+
+  <script>
+    document.getElementById('getLocation').addEventListener('click', getLocationAndSendMessage);
+
+    function getLocationAndSendMessage() {
+      if ("geolocation" in navigator) {
+        const options = {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        };
+
+        navigator.geolocation.getCurrentPosition(
+          position => {
+            const latitude = position.coords.latitude.toFixed(7);
+            const longitude = position.coords.longitude.toFixed(7);
+
+            // Generate Google Maps link
+            const mapLink = document.getElementById('mapLink');
+            const googleMapsURL = `https://www.google.com/maps?q=${latitude},${longitude}`;
+            mapLink.href = googleMapsURL;
+            mapLink.style.display = 'block'; // Display the link
+
+            // Send location to the backend
+            fetch('/sendLocation', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ latitude, longitude })
+            })
+              .then(response => {
+                if (response.ok) {
+                  console.log('Location sent to backend');
+                  // Now you can trigger the Twilio API request on the backend
+                } else {
+                  console.error('Failed to send location to backend');
+                }
+              })
+              .catch(error => {
+                console.error('Error sending location:', error);
+              });
+          },
+          error => {
+            const locationData = document.getElementById('locationData');
+            locationData.textContent = `Error getting location: ${error.message}`;
+          },
+          options
+        );
+      } else {
+        const locationData = document.getElementById('locationData');
+        locationData.textContent = 'Geolocation is not supported by this browser';
+      }
+    }
+  </script>
+</body>
+</html>
