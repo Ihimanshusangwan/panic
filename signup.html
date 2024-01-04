@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Panic Button - Sign In / Sign Up</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .form-container {
+      max-width: 400px;
+      margin: 100px auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .form-container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .form-container .btn {
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container">
+      <a class="navbar-brand" href="./">PANIC BUTTON</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+  
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="./about">About</a>
+          </li>
+          
+          <!-- Add more navigation items as needed -->
+        </ul>
+        <a href="./signin" class="btn btn-outline-primary ml-2">Sign In</a>
+      </div>
+    </div>
+  </nav>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6 offset-md-3 form-container">
+        
+
+        <!-- Sign Up Form -->
+        <form id="signupForm">
+          <h2>Sign Up</h2>
+          <div class="form-group">
+            <label for="signupName">Name</label>
+            <input type="text" class="form-control" id="signupName" placeholder="Enter your name" required>
+          </div>
+          <div class="form-group">
+            <label for="signupUsername">Username</label>
+            <input type="text" class="form-control" id="signupUsername" placeholder="Enter username" required>
+          </div>
+          <div class="form-group">
+            <label for="signupPassword">Password</label>
+            <input type="password" class="form-control" id="signupPassword" placeholder="Enter password" required>
+          </div>
+          <button type="submit" class="btn btn-success">Sign Up</button>
+         <centre> <a href="./signin">Login</a></centre>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.getElementById("signupForm").addEventListener("submit", function(event) {
+      event.preventDefault(); // Prevent the default form submission
+  
+      const name = document.getElementById("signupName").value;
+      const username = document.getElementById("signupUsername").value;
+      const password = document.getElementById("signupPassword").value;
+  
+      // Construct the data object
+      const formData = {
+        name: name,
+        username: username,
+        password: password
+      };
+  
+      // Send the POST request to the server
+      fetch('/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      })
+      .then(response => response.json())
+      .then(data => {
+      if (data.error) {
+        // Display error message on the form
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'alert alert-danger';
+        errorDiv.appendChild(document.createTextNode(data.error));
+
+        // Check if an error message already exists, then replace it
+        const existingError = document.querySelector('.alert-danger');
+        if (existingError) {
+          existingError.parentNode.replaceChild(errorDiv, existingError);
+        } else {
+          document.getElementById('signupForm').prepend(errorDiv);
+        }
+      } else {
+        // Display success message or redirect to another page
+        const successDiv = document.createElement('div');
+        successDiv.className = 'alert alert-success';
+        successDiv.appendChild(document.createTextNode(data.message));
+        setTimeout(() => {
+          window.location.href = '/signin'; // Replace '/signin' with your login page URL
+        }, 2000); 
+
+        // Replace existing error message (if any) with success message
+        const existingError = document.querySelector('.alert-danger');
+        if (existingError) {
+          existingError.parentNode.replaceChild(successDiv, existingError);
+        } else {
+          document.getElementById('signupForm').prepend(successDiv);
+        }
+        
+        // Optionally, redirect to another page after successful signup
+        // window.location.href = '/success'; // Replace '/success' with your desired URL
+      }
+    })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    });
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Panic Button - Sign In / Sign Up</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .form-container {
+      max-width: 400px;
+      margin: 100px auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .form-container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .form-container .btn {
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container">
+      <a class="navbar-brand" href="./">PANIC BUTTON</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+  
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="./about">About</a>
+          </li>
+          
+          <!-- Add more navigation items as needed -->
+        </ul>
+        <a href="./signin" class="btn btn-outline-primary ml-2">Sign In</a>
+      </div>
+    </div>
+  </nav>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6 offset-md-3 form-container">
+        <!-- Sign In Form --><div class="alert alert-danger d-none" role="alert" id="errorMessage"></div>
+        <form id="signinForm">
+          <h2>Sign In</h2>
+          <div class="form-group">
+            <label for="signinUsername">Username</label>
+            <input type="text" class="form-control" id="signinUsername" placeholder="Enter username" required>
+          </div>
+          <div class="form-group">
+            <label for="signinPassword">Password</label>
+            <input type="password" class="form-control" id="signinPassword" placeholder="Enter password" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Sign In</button>
+          <a href="./signup">Signup</a>
+        </form>
+        <hr>
+      </div>
+    </div>
+  </div>
+  <script>
+   document.getElementById("signinForm").addEventListener("submit", function(event) {
+  event.preventDefault(); // Prevent the default form submission
+
+  const username = document.getElementById("signinUsername").value;
+  const password = document.getElementById("signinPassword").value;
+
+  const formData = {
+    username: username,
+    password: password
+  };
+
+  fetch('/signin', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(formData)
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.error) {
+      // Handle error
+      console.error('Error:', data.error);
+      if (data.error === 'Invalid username or password') {
+        const errorMessageDiv = document.getElementById('errorMessage');
+        errorMessageDiv.textContent = 'Invalid username or password. Please check your credentials.';
+        errorMessageDiv.classList.remove('d-none'); // Show the alert
+      }
+    } else {
+      // Display success message or handle successful login
+      console.log('Success:', data.message);
+      if (data.message === 'Login successful') {
+        window.location.href = '/dashboard'; // Redirect to the dashboard page
+      }
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    // Handle errors or display a message to the user
+  });
+});
+
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

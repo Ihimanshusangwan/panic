@@ -2,67 +2,51 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Fetch Highly Accurate Location</title>
+  <title>Home Page</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Fetch Highly Accurate Location</h1>
-  <button id="getLocation">Get Location and Send Message</button>
-  <p id="locationData"></p>
-  <a href="#" id="mapLink" target="_blank" style="display: none;">Open in Google Maps</a>
+    
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container">
+      <a class="navbar-brand" href="./">PANIC BUTTON</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+  
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="./about">About</a>
+          </li>
+          
+          <!-- Add more navigation items as needed -->
+        </ul>
+        <a href="./signin" class="btn btn-outline-primary ml-2">Sign In</a>
+      </div>
+    </div>
+  </nav>
+  
 
-  <script>
-    document.getElementById('getLocation').addEventListener('click', getLocationAndSendMessage);
+<div class="container mt-4">
+  <div class="jumbotron">
+    <h1>Welcome to the Panic Button</h1>
+    <p>Your safety is our top priority.</p>
+    <p>Feeling unsafe or threatened? Our Panic Button   site is here for you.</p>
+    <p>Instantly connect with emergency services or trusted contacts at the touch of a button.</p>
+    <hr class="my-4">
+    <p>Sign Up on our website  today and empower yourself with a quick, discreet, and reliable safety solution.</p>
+    <a class="btn btn-primary btn-lg" href="./signup" role="button">Signup</a>
+  </div>
+</div>
 
-    function getLocationAndSendMessage() {
-      if ("geolocation" in navigator) {
-        const options = {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 0
-        };
+<!-- Bootstrap JS, Popper.js, and jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-        navigator.geolocation.getCurrentPosition(
-          position => {
-            const latitude = position.coords.latitude.toFixed(7);
-            const longitude = position.coords.longitude.toFixed(7);
-
-            // Generate Google Maps link
-            const mapLink = document.getElementById('mapLink');
-            const googleMapsURL = `https://www.google.com/maps?q=${latitude},${longitude}`;
-            mapLink.href = googleMapsURL;
-            mapLink.style.display = 'block'; // Display the link
-
-            // Send location to the backend
-            fetch('/sendLocation', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ latitude, longitude })
-            })
-              .then(response => {
-                if (response.ok) {
-                  console.log('Location sent to backend');
-                  // Now you can trigger the Twilio API request on the backend
-                } else {
-                  console.error('Failed to send location to backend');
-                }
-              })
-              .catch(error => {
-                console.error('Error sending location:', error);
-              });
-          },
-          error => {
-            const locationData = document.getElementById('locationData');
-            locationData.textContent = `Error getting location: ${error.message}`;
-          },
-          options
-        );
-      } else {
-        const locationData = document.getElementById('locationData');
-        locationData.textContent = 'Geolocation is not supported by this browser';
-      }
-    }
-  </script>
 </body>
 </html>

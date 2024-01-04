@@ -1,0 +1,57 @@
+
+    /* Add custom styles for the panic-button */
+    .panic-button {
+      background-color: red;
+      color: white;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+
+    body {
+      background-color: #f4f4f4;
+      font-family: Arial, sans-serif;
+    }
+    .navbar {
+      background-color: #fff;
+    }
+    .navbar-brand {
+      font-weight: bold;
+      color: #ff6600;
+    }
+    .highlight {
+      color: #ff6600;
+    }
+    .jumbotron {
+      background-color: #fff;
+      padding: 50px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .feature-list {
+      list-style: none;
+      padding-left: 0;
+    }
+    .feature-list li {
+      color: #333;
+      margin-bottom: 15px;
+    }
+    .feature-list .highlight {
+      font-weight: bold;
+      color: #ff6600;
+    }
+    .cta-button {
+      background-color: #ff6600;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+    }
+    .cta-button:hover {
+      background-color: #ff8533;
+      color: #fff;
+      text-decoration: none;
+    }
+ 

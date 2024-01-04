@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emergency App</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10">
+  </link>
+
+  <style>
+    /* Add any custom styles here */
+    /* Example: Adjusting the emergency button's appearance */
+    .emergency-button {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      border: 3px solid red;
+      background-color: white;
+      color: red;
+      font-size: 24px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+      text-align: center;
+      margin: auto;
+    }
+
+    .emergency-button:hover {
+      background-color: red;
+      color: white;
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">PANIC BUTTON</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <button class="btn btn-outline-primary mr-2" data-toggle="modal" data-target="#updateMobileModal">
+            Update Mobile
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="btn btn-outline-danger mr-2" onclick="logout()">
+            Logout
+          </button>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Update Mobile Modal -->
+  <div class="modal fade" id="updateMobileModal" tabindex="-1" role="dialog" aria-labelledby="updateMobileModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="updateMobileModalLabel">
+            Update Mobile Number
+          </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- Form to update mobile number -->
+          <form id="updateMobileForm">
+            <div class="form-group">
+              <label for="newMobileNumber">New Mobile Number</label>
+              <input type="text" class="form-control" id="newMobileNumber" placeholder="Enter new mobile number"
+                required />
+            </div>
+            <button type="submit" class="btn btn-primary">Update</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content area -->
+  <div class="container mt-4">
+    <h1 class="text-center">Press the button in Emergency Situation</h1>
+    <!-- Add your content here -->
+    <p id="locationData"></p>
+    <!-- Your SOS button -->
+    <div class="emergency-button my-5" id="sosButton">SOS</div>
+
+    <!-- The SOS modal -->
+    <div class="modal" id="sosModal" tabindex="-1" aria-labelledby="sosModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="sosModalLabel">SOS Message</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <textarea class="form-control" id="messageTextArea" placeholder="Enter your message"></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" onclick="sendSOS()">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <!-- Bootstrap JS and dependencies -->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+  <script>
+    // Function to retrieve the userId from the cookie
+    function getUserIdFromCookie() {
+      const cookies = document.cookie.split(';').map(cookie => cookie.trim());
+      for (const cookie of cookies) {
+        const [name, value] = cookie.split('=');
+        if (name.trim() === 'userId') {
+          return value;
+        }
+      }
+      return null;
+    }
+    const userId = getUserIdFromCookie();
+    function logout() {
+      // Delete userId cookie
+      document.cookie = 'userId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+
+      // Redirect to the /signin route
+      window.location.href = '/signin';
+    }
+
+    document.getElementById('sosButton').addEventListener('click', function () {
+      $('#sosModal').modal('show');
+    });
+    function sendSOS() {
+      const message = document.getElementById('messageTextArea').value;
+      if ("geolocation" in navigator) {
+        const options = {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        };
+
+        navigator.geolocation.getCurrentPosition(
+          position => {
+            const latitude = position.coords.latitude.toFixed(7);
+            const longitude = position.coords.longitude.toFixed(7);
+
+            // Generate Google Maps link
+            const googleMapsURL = `https://www.google.com/maps?q=${latitude},${longitude}`;
+
+
+            // Send location to the backend
+            fetch('/sendLocation', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ message, latitude, longitude, userId })
+            })
+              .then(response => {
+                if (response.ok) {
+                  // Close the modal after sending (for demonstration purposes)
+                  $('#sosModal').modal('hide');
+                  const sosButton = document.getElementById('sosButton');
+
+                  sosButton.style.border = "3px solid green";
+                  sosButton.style.backgroundColor = "green";
+                  sosButton.style.color = "white";
+                  sosButton.innerText = 'Location sent successfully';
+
+                  // Revert back to original appearance after 3 seconds
+                  setTimeout(() => {
+                    sosButton.style.border = "3px solid red";
+                    sosButton.style.backgroundColor = "white";
+                    sosButton.style.color = "red";
+                    sosButton.innerText = 'SOS';
+                  }, 3000); // 3000 milliseconds (3 seconds)
+                  console.log('Location sent to backend');
+                } else {
+                  console.error('Failed to send location to backend');
+                }
+              })
+              .catch(error => {
+                console.error('Error sending location:', error);
+              });
+          },
+          error => {
+            const locationData = document.getElementById('locationData');
+            locationData.textContent = `Error getting location: ${error.message}`;
+          },
+          options
+        );
+      } else {
+        const locationData = document.getElementById('locationData');
+        locationData.textContent = 'Geolocation is not supported by this browser';
+      }
+    }
+
+    document
+      .getElementById("updateMobileForm")
+      .addEventListener("submit", function (event) {
+        event.preventDefault(); // Prevent default form submission
+
+        const newMobileNumber =
+          document.getElementById("newMobileNumber").value;
+        // Implement logic to update the mobile number (replace with your logic)
+        console.log("Update mobile number to:", newMobileNumber);
+        // Add your update mobile logic here
+
+        // Close the modal after updating mobile number
+        $("#updateMobileModal").modal("hide");
+      });
+
+
+    document.getElementById('updateMobileForm').addEventListener('submit', async function (event) {
+      event.preventDefault(); // Prevent the default form submission
+
+      const newMobileNumber = document.getElementById('newMobileNumber').value;
+
+
+      if (!userId) {
+        console.error('User ID not found in cookies');
+        return;
+      }
+
+      try {
+        const response = await fetch('/user/mobile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            mobileNumber: newMobileNumber,
+            userId: userId
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          // Show success alert using SweetAlert2
+          Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: data.message,
+          });
+        } else {
+          const errorData = await response.json();
+          // Show error alert using SweetAlert2
+          Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: errorData.error,
+          });
+        }
+
+      } catch (error) {
+        console.error('Failed to update mobile number:', error);
+      }
+    });
+  </script>
+</body>
+
+</html>
